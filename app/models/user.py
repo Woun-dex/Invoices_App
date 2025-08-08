@@ -1,43 +1,46 @@
-from sqlmodel import SQLModel, Field, Relationship
-from typing import Optional, List
-import datetime
+# user.py
 
-from app.models.client import Client
-from app.models.invoice import Invoice
+from pydantic import BaseModel, EmailStr
+from sqlmodel import SQLModel, Field, Relationship
+from typing import Optional, List, TYPE_CHECKING
+from datetime import datetime, timezone
+
+if TYPE_CHECKING:
+    from app.models.client import Client
+    from app.models.invoice import Invoice
 
 
 class UserBase(SQLModel):
-    email: str
-    is_active: bool
+    email: EmailStr
+    is_active: bool = True
 
 
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    username: str
-    hashed_password: str
-    email: str
-    is_active: bool
-    is_admin: bool
-    created_at: datetime = Field(default_factory=datetime.datetime.now)
-    clients : List["Client"] = Relationship(back_populates="owner")
-    invoices : List["Invoice"] = Relationship(back_populates="owner")
+    username: str = Field(index=True, unique=True)
+    password: str
+    email: EmailStr = Field(unique=True)
+    is_active: bool = True
+    is_admin: bool = False
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    clients: List["Client"] = Relationship(back_populates="owner")
+    invoices: List["Invoice"] = Relationship(back_populates="owner")
 
 
 class UserCreate(UserBase):
+    username: str
     password: str
 
-class UserUpdate(SQLModel):
-    email: Optional[str] = None
-    is_active: Optional[bool] = None
-    password: Optional[str] = None
 
 class UserRead(UserBase):
     id: int
+    username: str
     created_at: datetime
 
-class Token(SQLModel):
+class Token(BaseModel):
     access_token: str
     token_type: str = 'Bearer'
 
-class TokenData(SQLModel):
-    email: Optional[str] = None
+class TokenData(BaseModel):
+    username: Optional[str] = None
