@@ -23,14 +23,14 @@ class TokenData(BaseModel):
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-def get_user(db: Session, username: str):
-    user = db.exec(select(User).where(User.username == username)).first()
+def get_user(db: Session, email: str):
+    user = db.exec(select(User).where(User.email == email)).first()
     if not user:
         return None
     return user
 
-def authenticate_user(db: Session ,username: str, password: str):
-    user = get_user(db, username)
+def authenticate_user(db: Session ,email: str, password: str):
+    user = get_user(db, email)
     if not user:
         return None
     if not verify_password(password, user.password):
@@ -55,23 +55,23 @@ async def get_current_user(token: Annotated[str , Depends(oauth2_scheme)], db : 
     )
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        email: str = payload.get("sub")
+        if email is None:
             raise credentials_exception
     except InvalidTokenError:
         raise credentials_exception
-    user = get_user(db, username= username)
+    user = get_user(db, email= email)
     if user is None:
         raise credentials_exception
     return user
 
 
 async def get_current_active_user(current_user: User = Depends(get_current_user))->User:
-    if current_user.is_active:
+    if not  current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
-def register_user_service(db: Session, username: str, email: str , password: str)->User:
+def register_user_service(db: Session, username: str, email: EmailStr , password: str)->User:
     statement = select(User).where((User.username == username) | (User.email == email))
     user = db.exec(statement).first()
     if user:

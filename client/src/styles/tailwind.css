@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Colors */
+    --color-primary: theme('colors.blue.600');
+    --color-primary-hover: theme('colors.blue.700');
+    --color-danger: theme('colors.red.600');
+    --color-danger-hover: theme('colors.red.700');
+    --color-text-on-primary: theme('colors.white');
+    
+    /* Input & Card Styles */
+    --color-border: theme('colors.gray.300');
+    --color-input-focus-ring: theme('colors.blue.500');
+    --color-card-bg: theme('colors.white');
+    --color-card-shadow: theme('colors.gray.200');
+  }
+
+  /* Example of how easy a dark mode can be:
+  .dark {
+    --color-border: theme('colors.gray.700');
+    --color-card-bg: theme('colors.gray.800');
+    --color-card-shadow: theme('colors.black');
+  }
+  */
+}
+
+/*
+  ================================================================================
+  CUSTOM COMPONENT CLASSES
+  We use @apply here to build our custom components using Tailwind's utilities.
+  Notice they now use our CSS variables for colors.
+  ================================================================================
+*/
+@layer components {
+  /* * Form Inputs
+   * - Uses CSS variables for border and focus ring colors.
+   * - Adds a smooth transition for a polished feel.
+   * - Uses `focus-visible` for a modern, accessible focus state.
+  */
+  .input {
+    @apply w-full rounded-md border px-3 py-2 shadow-sm transition-colors duration-200;
+    border-color: var(--color-border);
+  }
+  .input:focus-visible {
+    @apply outline-none ring-2 ring-offset-2;
+    border-color: var(--color-input-focus-ring);
+    ring-color: var(--color-input-focus-ring);
+  }
+
+  /* * Buttons
+   * - Base .btn class for shared styles (padding, font, etc.).
+   * - Variants (.btn-primary, .btn-danger) for specific colors.
+   * - Adds smooth transitions and a focus ring for better UX and accessibility.
+  */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply text-white shadow-sm;
+    background-color: var(--color-primary);
+    ring-color: var(--color-primary);
+  }
+  .btn-primary:hover {
+    background-color: var(--color-primary-hover);
+  }
+  .btn-primary:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  .btn-danger {
+    @apply text-white shadow-sm;
+    background-color: var(--color-danger);
+    ring-color: var(--color-danger);
+  }
+  .btn-danger:hover {
+    background-color: var(--color-danger-hover);
+  }
+
+  /* * Cards
+   * - A simple container with background, padding, and a subtle shadow.
+  */
+  .card {
+    @apply p-6 rounded-lg;
+    background-color: var(--color-card-bg);
+    box-shadow: 0 4px 6px -1px var(--color-card-shadow);
+  }
+}

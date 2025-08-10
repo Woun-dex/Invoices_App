@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice {{ invoice.invoice_number }}</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            font-size: 16px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+        }
+        .header .company-details {
+            text-align: right;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            color: #333;
+            margin: 0;
+        }
+        .client-details {
+            margin-bottom: 40px;
+        }
+        .invoice-details {
+            text-align: right;
+            margin-bottom: 40px;
+        }
+        .invoice-table {
+            width: 100%;
+            line-height: inherit;
+            text-align: left;
+            border-collapse: collapse;
+        }
+        .invoice-table td {
+            padding: 8px;
+            vertical-align: top;
+        }
+        .invoice-table .heading td {
+            background: #eee;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+        .invoice-table .item td {
+            border-bottom: 1px solid #eee;
+        }
+        .total {
+            text-align: right;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 0.8em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <div class="header">
+            <div>
+                <!-- Replace with your company's logo URL or a base64 encoded image -->
+                <img src="https://placehold.co/150x50/333/FFF?text=Your+Logo" alt="Company Logo" style="max-width: 150px;">
+            </div>
+            <div class="company-details">
+                <strong>Your Company Inc.</strong><br>
+                123 Main Street<br>
+                Anytown, USA 12345
+            </div>
+        </div>
+
+        <div class="client-details">
+            <strong>Bill To:</strong><br>
+            {{ invoice.client.name }}<br>
+            {{ invoice.client.email }}<br>
+            {{ invoice.client.address or '' }}
+        </div>
+
+        <div class="invoice-details">
+            <h1>Invoice</h1>
+            <strong>Invoice #:</strong> {{ invoice.invoice_number }}<br>
+            <strong>Created:</strong> {{ invoice.created_at.strftime('%B %d, %Y') }}<br>
+            <strong>Due:</strong> {{ invoice.due_at.strftime('%B %d, %Y') }}
+        </div>
+
+        <table class="invoice-table">
+            <tr class="heading">
+                <td>Description</td>
+                <td>Amount</td>
+            </tr>
+            <tr class="item">
+                <td>Service or Product Description</td>
+                <td>${ "{:,.2f}".format(invoice.amount) }</td>
+            </tr>
+            <!-- In the future, you could loop through line items here -->
+        </table>
+
+        <div class="total">
+            Total: ${ "{:,.2f}".format(invoice.amount) }
+        </div>
+
+        <div class="footer">
+            Thank you for your business.
+        </div>
+    </div>
+</body>
+</html>

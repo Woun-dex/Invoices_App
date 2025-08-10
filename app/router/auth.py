@@ -5,7 +5,7 @@ from sqlmodel import Session
 
 from app.services.auth_service import register_user_service , get_current_active_user , Token , create_access_token , authenticate_user
 from app.core.database import get_session
-from app.models.user import User , UserCreate
+from app.models.user import User , UserCreate , UserRead
 from fastapi.security import OAuth2PasswordRequestForm
 from app.core.config import settings
 
@@ -32,6 +32,12 @@ async def login_user(form_data: OAuth2PasswordRequestForm = Depends() , db : Ses
         )
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.email}, expires_delta=access_token_expires
     )
     return Token(access_token=access_token, token_type="bearer")
+
+
+@router.get("/users/me", response_model=UserRead)
+def read_users_me(current_user: User = Depends(get_current_active_user)):
+
+    return current_user
